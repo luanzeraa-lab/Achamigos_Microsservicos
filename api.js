@@ -1,18 +1,18 @@
-require('dotenv').config(); // Carrega variáveis de ambiente do arquivo .env
-const express = require("express"); // Importa o framework Express
-const cors = require("cors"); // Importa o middleware CORS para permitir requisições de outros domínios
-const mongoose = require('mongoose'); // Importa o Mongoose para conectar ao MongoDB
-const userRoutes = require('./routes/UserRoute'); // caminho para o arquivo que você criou
+require('dotenv').config(); 
+const express = require("express"); 
+const cors = require("cors"); 
+const mongoose = require('mongoose'); 
+const userRoutes = require('./routes/UserRoute'); 
 
 
-const app = express(); // Cria a aplicação Express
-app.use(express.json()); // Permite receber JSON no corpo das requisições
-app.use(cors({ origin: "*" })); // Permite requisições de qualquer origem
+const app = express(); 
+app.use(express.json()); 
+app.use(cors({ origin: "*" })); 
 app.use(userRoutes);
 
-const port = 5001; // Define a porta do servidor
+const port = 5001; 
 
-// Conexão com o MongoDB usando a string definida no .env
+
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("Conexão com o banco de dados bem sucedida");
