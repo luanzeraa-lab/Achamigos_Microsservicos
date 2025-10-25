@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(cors({ origin: "*" }));
 
 
-app.use('/public', express.static(`${__dirname}/public`));
+app.use('/public', express.static('public', { fallthrough: true }));
 
 
 const swaggerOptions = {
