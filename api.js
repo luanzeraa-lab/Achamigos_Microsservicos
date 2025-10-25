@@ -4,20 +4,19 @@ const cors = require("cors");
 const mongoose = require('mongoose'); 
 const userRoutes = require('./routes/UserRoute'); 
 const apiKeyAuth = require('./middlewares/apiKeyAuth');
-
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger-output.json');
 
 const app = express();
 
-// 🧱 Middleware base
+// Middlewares básicos
 app.use(express.json()); 
 app.use(cors({ origin: "*" }));
 
-// 🖼️ Servir arquivos estáticos (CSS e imagens)
+// Arquivos estáticos (ícones, CSS do Swagger etc.)
 app.use('/public', express.static(`${__dirname}/public`));
 
-// ⚙️ Swagger (com logo e CSS personalizado)
+// Swagger Docs
 const swaggerOptions = {
   customCssUrl: '/public/custom.css',
   customSiteTitle: "API Achamigos",
@@ -25,21 +24,29 @@ const swaggerOptions = {
 };
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerOptions));
 
-// 🔐 Protege o restante da API com API key
+// Middleware de autenticação por API Key
 app.use(apiKeyAuth);
 
-// Rotas protegidas
+// Rotas principais
 app.use(userRoutes);
 
-const port = 5001; 
+// Rota base (teste rápido)
+app.get("/", (req, res) => {
+  res.json({ message: "🚀 Microsserviço Achamigos rodando com sucesso!" });
+});
 
+// Conexão MongoDB
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("Conexão com o banco de dados bem-sucedida!");
-    app.listen(port, () => {
-      console.log(`🚀 Servidor iniciado com sucesso na porta ${port}`);
-    });
-  })
-  .catch(err => {
-    console.log("Erro ao conectar ao banco de dados:", err);
+  .then(() => console.log("✅ Conexão com o banco de dados bem-sucedida!"))
+  .catch(err => console.log("❌ Erro ao conectar ao banco de dados:", err));
+
+// Só roda localmente (não na Vercel)
+if (process.env.NODE_ENV !== "production") {
+  const port = process.env.PORT || 5001;
+  app.listen(port, () => {
+    console.log(`🚀 Servidor local iniciado na porta ${port}`);
   });
+}
+
+// Exporta o app para a Vercel usar
+module.exports = app;
